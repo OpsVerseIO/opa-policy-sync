@@ -1,4 +1,4 @@
-# Open Policy Agent (OPA) Policy Check Action
+# Open Policy Agent (OPA) Policy Sync Action
 
 [![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
@@ -6,7 +6,7 @@
 [![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-A GitHub action that validates the policy using OPA.
+A GitHub action that syncs REGO policies from Git to an OPA Server
 
 ## Usage
 
