@@ -28247,47 +28247,46 @@ const https_1 = __nccwpck_require__(5687);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const opaServerUrl = core.getInput('opaServerUrl') || 'http://localhost:8181';
-            const opaServerAuthToken = core.getInput('opaServerAuthToken');
-            const opaPoliciesPath = core.getInput('opaPoliciesPath') || './rego';
-            const recurseDirs = core.getInput('recurseDirs') || true;
-            const skipTlsValidation = core.getInput('skipTlsValidation');
+            const opaServerUrl = core.getInput("opaServerUrl") || "http://localhost:8181";
+            const opaServerAuthToken = core.getInput("opaServerAuthToken");
+            const opaPoliciesPath = core.getInput("opaPoliciesPath") || "./policies";
+            const recurseDirs = core.getInput("recurseDirs") || true;
+            const skipTlsValidation = core.getInput("skipTlsValidation");
             const headers = {
                 Authorization: `Bearer ${opaServerAuthToken}`,
-                'Content-Type': 'text/plain'
+                "Content-Type": "text/plain",
             };
             core.info(`----------- OPA Server Details ----------`);
             core.info(`🔗 URL: ${opaServerUrl}`);
             core.info(`📋 OPA Policies Path: ${opaPoliciesPath}`);
             core.info(`-----------------------------------------`);
             const httpsAgent = new https_1.Agent({
-                rejectUnauthorized: skipTlsValidation ? false : true
+                rejectUnauthorized: skipTlsValidation ? false : true,
             });
             skipTlsValidation
-                ? core.warning('❗🔓 Skip TLS Validation enabled. Please be careful while using this.')
-                : core.info('💚🔒 Skip TLS Validation disabled.');
+                ? core.warning("❗🔓 Skip TLS Validation enabled. Please be careful while using this.")
+                : core.info("💚🔒 Skip TLS Validation disabled.");
             const files = fs
                 .readdirSync(opaPoliciesPath, { recursive: !!recurseDirs })
-                .filter(fn => fn.toString().endsWith('.rego'));
+                .filter((fn) => fn.toString().endsWith(".rego"));
             const regoMap = new Map();
             for (let filePath of files) {
-                let splitFile = filePath.toString().split('/');
+                let splitFile = filePath.toString().split("/");
                 let policyName = splitFile[splitFile.length - 1].toLowerCase();
                 policyName = policyName.substring(0, policyName.length - 5);
                 if (regoMap.has(policyName)) {
                     core.setFailed(`Duplicate Policy with Name: ${policyName} in ${filePath}`);
                 }
                 else {
-                    const data = fs.readFileSync(opaPoliciesPath + '/' + filePath, 'utf8');
+                    const data = fs.readFileSync(opaPoliciesPath + "/" + filePath, "utf8");
                     regoMap.set(policyName, data);
                 }
             }
-            console.log(regoMap);
             let currentPoliciesList = [];
             const currentPoliciesResponse = yield axios
                 .create({ httpsAgent })
                 .get(`${opaServerUrl}/v1/policies`, {
-                headers
+                headers,
             });
             if (currentPoliciesResponse.status === 200) {
                 currentPoliciesList = currentPoliciesResponse.data.result.map((x) => x.id);
@@ -28296,7 +28295,7 @@ function run() {
             else {
                 core.error(`🛑⚠️❗ Get Policies failed with status code: ${currentPoliciesResponse.status}`);
             }
-            const policiesToDelete = currentPoliciesList.filter(policyName => {
+            const policiesToDelete = currentPoliciesList.filter((policyName) => {
                 return !regoMap.has(policyName);
             });
             // Create/Update Policies
@@ -28304,7 +28303,7 @@ function run() {
                 const policyCreateResponse = yield axios
                     .create({ httpsAgent })
                     .put(`${opaServerUrl}/v1/policies/${key}`, value, {
-                    headers
+                    headers,
                 });
                 if (policyCreateResponse.status === 200) {
                     core.info(`✅ Policy ${key} created/updated successfully`);
@@ -28314,15 +28313,15 @@ function run() {
                 }
             }
             // Delete Deleted Policies
-            console.log(policiesToDelete);
+            core.info(`The following policies will be deleted: ${policiesToDelete}`);
             for (let policy of policiesToDelete) {
                 const policyDeleteResponse = yield axios
                     .create({ httpsAgent })
                     .delete(`${opaServerUrl}/v1/policies/${policy}`, {
-                    headers
+                    headers,
                 });
                 if (policyDeleteResponse.status === 200) {
-                    core.info(`✅💚 Policy ${policy} deleted successfully`);
+                    core.info(`❎ Policy ${policy} deleted successfully`);
                 }
                 else {
                     core.error(`🛑⚠️❗ Delete Policies for ${policy} failed with status code: ${currentPoliciesResponse.status}`);

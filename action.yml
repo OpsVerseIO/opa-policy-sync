@@ -1,5 +1,5 @@
-name: 'opa-policy-check'
-description: 'A GitHub action that does OPA'
+name: 'opa-policy-sync'
+description: 'A GitHub action that syncs OPA policies'
 author: 'OpsVerse (https://opsverse.io)'
 
 branding:
@@ -31,6 +31,10 @@ inputs:
     description: 'Skip TLS validation. Get the data from OPA by ignoring the certificate.'
     required: false
     default: "false"
+  recurseDirs:
+    description: 'Recurse directories for policies.'
+    required: false
+    default: "true"
 
 runs:
   using: node20
