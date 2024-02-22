@@ -28295,20 +28295,6 @@ function run() {
             const policiesToDelete = currentPoliciesList.filter((policyName) => {
                 return !policyName.startsWith("bootstrap") && !regoMap.has(policyName);
             });
-            // Create/Update Policies
-            for (const [key, value] of regoMap) {
-                const policyCreateResponse = yield axios
-                    .create({ httpsAgent })
-                    .put(`${opaServerUrl}/v1/policies/${key}`, value, {
-                    headers,
-                });
-                if (policyCreateResponse.status === 200) {
-                    core.info(`✅ Policy ${key} created/updated successfully`);
-                }
-                else {
-                    core.error(`🛑⚠️❗ Create/Update Policies for ${key} failed with status code: ${currentPoliciesResponse.status}`);
-                }
-            }
             // Delete Deleted Policies
             core.info(`The following policies will be deleted: ${policiesToDelete}`);
             for (let policy of policiesToDelete) {
@@ -28322,6 +28308,20 @@ function run() {
                 }
                 else {
                     core.error(`🛑⚠️❗ Delete Policies for ${policy} failed with status code: ${currentPoliciesResponse.status}`);
+                }
+            }
+            // Create/Update Policies
+            for (const [key, value] of regoMap) {
+                const policyCreateResponse = yield axios
+                    .create({ httpsAgent })
+                    .put(`${opaServerUrl}/v1/policies/${key}`, value, {
+                    headers,
+                });
+                if (policyCreateResponse.status === 200) {
+                    core.info(`✅ Policy ${key} created/updated successfully`);
+                }
+                else {
+                    core.error(`🛑⚠️❗ Create/Update Policies for ${key} failed with status code: ${currentPoliciesResponse.status}`);
                 }
             }
         }
