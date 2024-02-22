@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@latest
       - name: Sync policy from git to Open Policy Agent (OPA)
-        uses: opsverse/opa-policy-sync@0.1.0
+        uses: OpsVerseIO/opa-policy-sync@0.1.0
         with:
           opaServerUrl: "https://opa.example.com"
           opaServerAuthToken: ${{ secrets.OPA_SERVER_AUTH_TOKEN }}
