@@ -36,16 +36,11 @@ export async function run(): Promise<void> {
 
     const regoMap = new Map();
     for (let filePath of files) {
-      let splitFile = filePath.toString().split("/");
-      let policyName = splitFile[splitFile.length - 1].toLowerCase();
-      policyName = policyName.substring(0, policyName.length - 5);
-      if (regoMap.has(policyName)) {
-        core.setFailed(
-          `Duplicate Policy with Name: ${policyName} in ${filePath}`,
-        );
+      if (regoMap.has(filePath)) {
+        core.setFailed(`Duplicate Policy with Name: ${filePath}`);
       } else {
         const data = fs.readFileSync(opaPoliciesPath + "/" + filePath, "utf8");
-        regoMap.set(policyName, data);
+        regoMap.set(filePath, data);
       }
     }
 
@@ -67,7 +62,7 @@ export async function run(): Promise<void> {
     }
 
     const policiesToDelete = currentPoliciesList.filter((policyName) => {
-      return !regoMap.has(policyName);
+      return !policyName.startsWith("bootstrap") && !regoMap.has(policyName);
     });
 
     // Create/Update Policies

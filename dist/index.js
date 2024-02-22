@@ -28271,15 +28271,12 @@ function run() {
                 .filter((fn) => fn.toString().endsWith(".rego"));
             const regoMap = new Map();
             for (let filePath of files) {
-                let splitFile = filePath.toString().split("/");
-                let policyName = splitFile[splitFile.length - 1].toLowerCase();
-                policyName = policyName.substring(0, policyName.length - 5);
-                if (regoMap.has(policyName)) {
-                    core.setFailed(`Duplicate Policy with Name: ${policyName} in ${filePath}`);
+                if (regoMap.has(filePath)) {
+                    core.setFailed(`Duplicate Policy with Name: ${filePath}`);
                 }
                 else {
                     const data = fs.readFileSync(opaPoliciesPath + "/" + filePath, "utf8");
-                    regoMap.set(policyName, data);
+                    regoMap.set(filePath, data);
                 }
             }
             let currentPoliciesList = [];
@@ -28296,7 +28293,7 @@ function run() {
                 core.error(`🛑⚠️❗ Get Policies failed with status code: ${currentPoliciesResponse.status}`);
             }
             const policiesToDelete = currentPoliciesList.filter((policyName) => {
-                return !regoMap.has(policyName);
+                return !policyName.startsWith("bootstrap") && !regoMap.has(policyName);
             });
             // Create/Update Policies
             for (const [key, value] of regoMap) {
