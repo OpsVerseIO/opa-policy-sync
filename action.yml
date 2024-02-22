@@ -1,0 +1,37 @@
+name: 'opa-policy-check'
+description: 'A GitHub action that does OPA'
+author: 'OpsVerse (https://opsverse.io)'
+
+branding:
+  icon: 'activity'
+  color: 'white'
+
+inputs:
+  opaServerUrl:
+    description: 'OPA Serveer URL'
+    required: true
+    default: ''
+  opaServerAuthToken:
+    description: 'OPA Server Auth Token'
+    required: true
+    default: ''
+  opaServerInput:
+    description: 'OPA Server Input'
+    required: true
+    default: ''
+  opaServerPackageName:
+    description: 'OPA Server Package Name'
+    required: true
+    default: ''
+  opaPolicyPath:
+    description: 'OPA Policy Path'
+    required: true
+    default: ''
+  skipTlsValidation:
+    description: 'Skip TLS validation. Get the data from OPA by ignoring the certificate.'
+    required: false
+    default: "false"
+
+runs:
+  using: node20
+  main: dist/index.js
